@@ -41,26 +41,29 @@ class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
             );
           } else {
             return Container(
-                color: Colors.black,
-                child: ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        for (var item in snapshot.data!["tree_dir"])
-                          ElevatedButton(
-                            child: Text(
-                              "$item ->",
-                              style: TextStyle(color: Colors.green),
-                            ),
-                            onPressed: () => editFile(item),
+              color: Colors.white,
+              child: ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      for (var item in snapshot.data!["tree_dir"])
+                        ListTile(
+                          trailing: const Icon(Icons.arrow_circle_right),
+                          focusColor: Colors.amber,
+                          title: Text(
+                            overflow: TextOverflow.ellipsis,
+                            "$item",
+                            style: const TextStyle(
+                                color: Colors.green, fontSize: 12),
                           ),
-                        const SizedBox(height: 5),
-                        const Divider(),
-                      ],
-                    );
-                  },
-                ));
+                          onTap: () => editFile(item),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            );
           }
         },
       ),
@@ -78,11 +81,13 @@ class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
                   IconButton(
                     icon: Icon(Icons.account_tree_rounded),
                     onPressed: () async {
-                      commitRepo(widget.name);
+                      final result = await commitRepo(widget.name);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text('Alterações Enviadas'),
+                        SnackBar(
+                          backgroundColor: result ? Colors.green : Colors.red,
+                          content: Text(result
+                              ? 'Alterações Enviadas'
+                              : 'Erro ao subir alterações'),
                           duration: Duration(seconds: 2),
                         ),
                       );
@@ -98,8 +103,17 @@ class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.undo),
-                    onPressed: () {
-                      // Lógica para reverter
+                    onPressed: () async {
+                      final result = await revertChanges(widget.name);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: result ? Colors.green : Colors.red,
+                          content: Text(result
+                              ? 'Alterações Revertidas'
+                              : 'Erro ao reverter alterações'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
                     },
                   ),
                 ],

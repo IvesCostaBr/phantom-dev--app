@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:code_edit/api.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 
 class EditFilePage extends StatefulWidget {
@@ -12,8 +13,101 @@ class EditFilePage extends StatefulWidget {
 }
 
 class _EditFilePageState extends State<EditFilePage> {
-  String text = "";
-  String dropdownValue = "Problema";
+  TextEditingController _problemTextController = TextEditingController();
+  List<String> _dropdownItems = ["refact", "fix"];
+  var selectItem = "refact";
+  var text = "";
+  var _loading = false;
+
+  sendFileGpt() async {
+    Navigator.of(context).pop();
+    setState(() {
+      _loading = true;
+    });
+    await autoChange(widget.fileDir, selectItem, _problemTextController.text);
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  _showAlertDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Formulário de Análise'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButton<String>(
+                value: selectItem,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectItem = newValue!;
+                  });
+                },
+                items: _dropdownItems.map((value) {
+                  return DropdownMenuItem(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+              TextField(
+                controller: _problemTextController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Descreva o problema no arquivo',
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                await sendFileGpt();
+              },
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateColor.resolveWith((states) => Colors.green)),
+              child: const Text(
+                'Enviar',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            if (_loading)
+              Container(
+                color: Colors.grey.withOpacity(0.5),
+                child: const Column(
+                  children: [
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text("Envinado Arquivo para Analise"),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> saveFile() async {
+    final response =
+        await updateFile(widget.name, widget.fileDir, text.split("\n"));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: response ? Colors.green : Colors.redAccent,
+        content: Text(response ? 'Arquivo Salvo' : 'Erro ao salvar o arquivo'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +153,10 @@ class _EditFilePageState extends State<EditFilePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(path.basename(widget.fileDir).toString()),
+                              Text(
+                                widget.fileDir,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               const SizedBox(
                                 height: 5,
                               ),
@@ -95,17 +192,7 @@ class _EditFilePageState extends State<EditFilePage> {
                                 height: 15,
                               ),
                               ElevatedButton(
-                                  onPressed: () {
-                                    updateFile(widget.name, widget.fileDir,
-                                        text.split("\n"));
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor: Colors.green,
-                                        content: Text('Arquivo Salvo'),
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
-                                  },
+                                  onPressed: () => saveFile(),
                                   style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateColor.resolveWith(
@@ -132,51 +219,7 @@ class _EditFilePageState extends State<EditFilePage> {
                                   )),
                               ElevatedButton(
                                   onPressed: () async {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: const Text('Formulario'),
-                                            content: Column(
-                                              children: [
-                                                DropdownButton<String>(
-                                                  value: dropdownValue,
-                                                  onChanged:
-                                                      (String? newValue) {
-                                                    setState(() {
-                                                      dropdownValue = newValue!;
-                                                    });
-                                                  },
-                                                  items: ['Reparação', 'Fix']
-                                                      .map((String value) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: value,
-                                                      child: Text(value),
-                                                    );
-                                                  }).toList(),
-                                                ),
-                                                if (dropdownValue == 'Fix')
-                                                  TextField(
-                                                    decoration:
-                                                        const InputDecoration(
-                                                      labelText: 'Problema',
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                            actions: <Widget>[
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  // Lógica para adicionar o repositório
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text(
-                                                    'Enviar Arquivo'),
-                                              ),
-                                            ],
-                                          );
-                                        });
+                                    _showAlertDialog();
                                   },
                                   style: ButtonStyle(
                                       backgroundColor:

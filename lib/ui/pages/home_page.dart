@@ -13,7 +13,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _repoLinkController = TextEditingController();
   final _repoNamekController = TextEditingController();
-  final _repoKeyController = TextEditingController();
+  final _repoBranchController = TextEditingController();
+  final _personalTokenController = TextEditingController();
 
   @override
   void initState() {
@@ -25,6 +26,88 @@ class _HomePageState extends State<HomePage> {
         context,
         MaterialPageRoute(
             builder: (_) => DetailRepositoryPage(name: repositoryName)));
+  }
+
+  showSnackBar(String text, bool isError) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: isError ? Colors.green : Colors.red,
+        content: Text(text),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  List<String> transformSSHKeyToArray(String sshKey) {
+    List<String> lines = sshKey.split("\n");
+    List<String> formattedLines = [];
+    for (String line in lines) {
+      formattedLines.add(line);
+    }
+    return formattedLines;
+  }
+
+  showFormCreateRepo() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Adicionar Repositório'),
+          content: Column(children: [
+            TextField(
+              controller: _repoNamekController,
+              decoration: const InputDecoration(
+                labelText: 'Nome do Repositório',
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            TextField(
+              controller: _repoLinkController,
+              decoration: const InputDecoration(
+                labelText: 'SSH url',
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            TextField(
+              controller: _personalTokenController,
+              decoration: const InputDecoration(
+                labelText: 'SSH Private Key',
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            TextField(
+              controller: _repoBranchController,
+              decoration: const InputDecoration(
+                labelText: 'Branch',
+              ),
+            )
+          ]),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () async {
+                final result = await createRepo(
+                    _repoNamekController.text,
+                    _repoLinkController.text,
+                    _repoBranchController.text,
+                    transformSSHKeyToArray(_personalTokenController.text));
+                final message = result
+                    ? "Repositório Adicionado"
+                    : "Erro ao adicionar o repositório";
+                showSnackBar(message, result);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Adicionar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -75,49 +158,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Adicionar Repositório'),
-                content: Column(children: [
-                  TextField(
-                    controller: _repoNamekController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nome do Repositório',
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  TextField(
-                    controller: _repoLinkController,
-                    decoration: const InputDecoration(
-                      labelText: 'SSH Link',
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  TextField(
-                    controller: _repoKeyController,
-                    decoration: const InputDecoration(
-                      labelText: 'Branch',
-                    ),
-                  )
-                ]),
-                actions: <Widget>[
-                  ElevatedButton(
-                    onPressed: () {
-                      // Lógica para adicionar o repositório
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Adicionar'),
-                  ),
-                ],
-              );
-            },
-          );
+          showFormCreateRepo();
         },
         child: const Icon(Icons.add),
       ),

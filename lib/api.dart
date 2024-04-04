@@ -2,7 +2,7 @@ import 'package:code_edit/dtos/repository.dart';
 import 'package:dio/dio.dart';
 
 final dio = Dio();
-const baseUrl = "https://76aa-189-112-211-57.ngrok-free.app";
+const baseUrl = "https://92ea-189-112-244-4.ngrok-free.app";
 
 Future<List<Repository>> getRepos() async {
   try {
@@ -100,7 +100,41 @@ Future<bool> autoChange(
     if (response.statusCode == 200) {
       return response.data["detail"];
     } else {
-      throw Exception("error in get repos.");
+      throw Exception("error in auto change");
+    }
+  } on Exception catch (e) {
+    return false;
+  }
+}
+
+Future<bool> revertChanges(String repoName) async {
+  try {
+    final response = await dio.post("$baseUrl/repositorys/revert-changes",
+        queryParameters: {"repo_name": repoName});
+    if (response.statusCode == 200) {
+      return response.data["detail"];
+    } else {
+      throw Exception("error in update repo");
+    }
+  } on Exception catch (e) {
+    return false;
+  }
+}
+
+Future<bool> createRepo(String repoName, String repoUrl, String repoBranch,
+    List<String> key) async {
+  try {
+    final payload = {
+      "name": repoName,
+      "branch": repoBranch,
+      "repo_url": repoUrl,
+      "key": key
+    };
+    final response = await dio.post("$baseUrl/repositorys", data: payload);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception("error in update repo");
     }
   } on Exception catch (e) {
     return false;
