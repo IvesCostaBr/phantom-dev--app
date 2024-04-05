@@ -2,6 +2,7 @@ import 'package:code_edit/api.dart';
 import 'package:code_edit/dtos/repository.dart';
 import 'package:code_edit/ui/pages/detail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ChaveSshEditingController extends TextEditingController {
   @override
@@ -25,11 +26,12 @@ class _HomePageState extends State<HomePage> {
   final _repoLinkController = TextEditingController();
   final _repoNamekController = TextEditingController();
   final _repoBranchController = TextEditingController();
-  final _personalTokenController = ChaveSshEditingController();
+  var _publicKey = '';
 
   @override
   void initState() {
     super.initState();
+    initializePublicKey();
   }
 
   getDetailReposotiory(String repositoryName) {
@@ -37,6 +39,11 @@ class _HomePageState extends State<HomePage> {
         context,
         MaterialPageRoute(
             builder: (_) => DetailRepositoryPage(name: repositoryName)));
+  }
+
+  initializePublicKey() async {
+    _publicKey = await getPublicKey();
+    setState(() {}); // Atualiza a UI com a chave pública obtida
   }
 
   showSnackBar(String text, bool isError) {
@@ -82,17 +89,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(
-                height: 10,
-              ),
-              TextField(
-                controller: _personalTokenController,
-                decoration: const InputDecoration(
-                  labelText: 'SSH Private Key',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: null,
-              ),
-              const SizedBox(
                 height: 5,
               ),
               TextField(
@@ -100,25 +96,68 @@ class _HomePageState extends State<HomePage> {
                 decoration: const InputDecoration(
                   labelText: 'Branch',
                 ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                  "Adicione essa chave publica no seu provedor de repositorio [GitHub, Gitlab]",
+                  overflow: TextOverflow.clip,
+                  maxLines: null),
+              const SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () => {
+                  Clipboard.setData(ClipboardData(text: _publicKey)),
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      backgroundColor: Colors.green,
+                      behavior: SnackBarBehavior.fixed,
+                      content:
+                          Text('Texto copiado para a área de transferência')))
+                },
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  elevation: 5, // Adiciona uma sombra para destacar o card
+                  child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: Text(
+                      _publicKey,
+                    ),
+                  ),
+                ),
               )
             ]),
           ),
           actions: <Widget>[
             ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateColor.resolveWith((states) => Colors.green)),
               onPressed: () async {
                 final result = await createRepo(
-                    _repoNamekController.text,
-                    _repoLinkController.text,
-                    _repoBranchController.text,
-                    transformSSHKeyToArray(_personalTokenController.text));
+                  _repoNamekController.text,
+                  _repoLinkController.text,
+                  _repoBranchController.text,
+                );
                 final message = result
                     ? "Repositório Adicionado"
                     : "Erro ao adicionar o repositório";
                 showSnackBar(message, result);
-                initState() {}
+                initState() {
+                  _repoNamekController.text = "";
+                  _repoBranchController.text = "";
+                  _repoLinkController.text = "";
+                }
+
                 Navigator.of(context).pop();
               },
-              child: const Text('Adicionar'),
+              child: const Text(
+                'Adicionar',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -179,7 +218,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           showFormCreateRepo();
         },
         child: const Icon(Icons.add),

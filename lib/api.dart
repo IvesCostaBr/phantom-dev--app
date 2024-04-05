@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 
 final dio = Dio();
-const baseUrl = "https://aaee-177-191-3-67.ngrok-free.app";
+const baseUrl = "https://8cb3-177-2-53-18.ngrok-free.app";
 
 Future<List<Repository>> getRepos() async {
   try {
@@ -129,14 +129,13 @@ Future<bool> revertChanges(String repoName) async {
   }
 }
 
-Future<bool> createRepo(String repoName, String repoUrl, String repoBranch,
-    List<String> key) async {
+Future<bool> createRepo(
+    String repoName, String repoUrl, String repoBranch) async {
   try {
     final payload = {
-      "name": repoName,
+      "repo_name": repoName,
       "branch": repoBranch,
       "repo_url": repoUrl,
-      "key": key
     };
     final response = await dio.post("$baseUrl/repositorys", data: payload);
     if (response.statusCode == 200) {
@@ -147,5 +146,21 @@ Future<bool> createRepo(String repoName, String repoUrl, String repoBranch,
   } on Exception catch (e) {
     developer.log(e as String);
     return false;
+  }
+}
+
+Future<String> getPublicKey() async {
+  try {
+    final response = await dio.get(
+      "$baseUrl/repositorys/keys/default",
+    );
+    if (response.statusCode == 200) {
+      return response.data["data"];
+    } else {
+      throw Exception("error in update repo");
+    }
+  } on Exception catch (e) {
+    developer.log(e as String);
+    return '';
   }
 }
