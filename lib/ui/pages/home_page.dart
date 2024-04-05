@@ -3,6 +3,17 @@ import 'package:code_edit/dtos/repository.dart';
 import 'package:code_edit/ui/pages/detail.dart';
 import 'package:flutter/material.dart';
 
+class ChaveSshEditingController extends TextEditingController {
+  @override
+  set text(String newText) {
+    value = value.copyWith(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+      composing: TextRange.empty,
+    );
+  }
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -14,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   final _repoLinkController = TextEditingController();
   final _repoNamekController = TextEditingController();
   final _repoBranchController = TextEditingController();
-  final _personalTokenController = TextEditingController();
+  final _personalTokenController = ChaveSshEditingController();
 
   @override
   void initState() {
@@ -53,41 +64,45 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Adicionar Repositório'),
-          content: Column(children: [
-            TextField(
-              controller: _repoNamekController,
-              decoration: const InputDecoration(
-                labelText: 'Nome do Repositório',
+          content: SingleChildScrollView(
+            child: Column(children: [
+              TextField(
+                controller: _repoNamekController,
+                decoration: const InputDecoration(
+                  labelText: 'Nome do Repositório',
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: _repoLinkController,
-              decoration: const InputDecoration(
-                labelText: 'SSH url',
+              const SizedBox(
+                height: 5,
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: _personalTokenController,
-              decoration: const InputDecoration(
-                labelText: 'SSH Private Key',
+              TextField(
+                controller: _repoLinkController,
+                decoration: const InputDecoration(
+                  labelText: 'SSH url',
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: _repoBranchController,
-              decoration: const InputDecoration(
-                labelText: 'Branch',
+              const SizedBox(
+                height: 10,
               ),
-            )
-          ]),
+              TextField(
+                controller: _personalTokenController,
+                decoration: const InputDecoration(
+                  labelText: 'SSH Private Key',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: null,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              TextField(
+                controller: _repoBranchController,
+                decoration: const InputDecoration(
+                  labelText: 'Branch',
+                ),
+              )
+            ]),
+          ),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () async {
@@ -100,6 +115,7 @@ class _HomePageState extends State<HomePage> {
                     ? "Repositório Adicionado"
                     : "Erro ao adicionar o repositório";
                 showSnackBar(message, result);
+                initState() {}
                 Navigator.of(context).pop();
               },
               child: const Text('Adicionar'),
@@ -137,14 +153,20 @@ class _HomePageState extends State<HomePage> {
               child: ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                          onPressed: () =>
-                              getDetailReposotiory(snapshot.data![index].name),
-                          child: Text(snapshot.data![index].name)),
-                    ],
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        side: const BorderSide(color: Colors.black),
+                      ),
+                      child: ListTile(
+                        onTap: () =>
+                            getDetailReposotiory(snapshot.data![index].name),
+                        title: Text(snapshot.data![index].name),
+                        trailing: Icon(Icons.arrow_forward),
+                      ),
+                    ),
                   );
                 },
               ),

@@ -1,8 +1,9 @@
 import 'package:code_edit/dtos/repository.dart';
+import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 
 final dio = Dio();
-const baseUrl = "https://92ea-189-112-244-4.ngrok-free.app";
+const baseUrl = "https://aaee-177-191-3-67.ngrok-free.app";
 
 Future<List<Repository>> getRepos() async {
   try {
@@ -18,6 +19,7 @@ Future<List<Repository>> getRepos() async {
       throw Exception("error in get repos.");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return [];
   }
 }
@@ -32,6 +34,7 @@ Future<Map<String, dynamic>> getRepoTree(String repoName) async {
       throw Exception("error in get repos.");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return Map();
   }
 }
@@ -47,6 +50,7 @@ Future<List<dynamic>> getFileDetail(String fileDir) async {
       throw Exception("error in get repos.");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return [];
   }
 }
@@ -65,6 +69,7 @@ Future<bool> updateFile(
       throw Exception("error in get repos.");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return false;
   }
 }
@@ -79,6 +84,7 @@ Future<bool> commitRepo(String repoName) async {
       throw Exception("error in get repos.");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return false;
   }
 }
@@ -103,6 +109,7 @@ Future<bool> autoChange(
       throw Exception("error in auto change");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return false;
   }
 }
@@ -117,6 +124,7 @@ Future<bool> revertChanges(String repoName) async {
       throw Exception("error in update repo");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return false;
   }
 }
@@ -137,6 +145,7 @@ Future<bool> createRepo(String repoName, String repoUrl, String repoBranch,
       throw Exception("error in update repo");
     }
   } on Exception catch (e) {
+    developer.log(e as String);
     return false;
   }
 }
