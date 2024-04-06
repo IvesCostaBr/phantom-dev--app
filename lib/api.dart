@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 
 final dio = Dio();
-const baseUrl = "https://8cb3-177-2-53-18.ngrok-free.app";
+var baseUrl = "";
 
 Future<List<Repository>> getRepos() async {
   try {
@@ -39,10 +39,10 @@ Future<Map<String, dynamic>> getRepoTree(String repoName) async {
   }
 }
 
-Future<List<dynamic>> getFileDetail(String fileDir) async {
+Future<List<dynamic>> getFileDetail(String fileDir, String repoName) async {
   try {
-    final response =
-        await dio.get("$baseUrl/repositorys/file/detail?file_dir=$fileDir");
+    final response = await dio.get(
+        "$baseUrl/repositorys/file/detail?file_dir=$fileDir&repo_name=$repoName");
 
     if (response.statusCode == 200) {
       return response.data;
@@ -93,9 +93,11 @@ Future<bool> autoChange(
   String fileDir,
   String typeChange,
   String? problem,
+  String repoName,
 ) async {
   try {
     final payload = {
+      "repo_name": repoName,
       "file_dir": fileDir,
       "type": typeChange,
       "problem": problem

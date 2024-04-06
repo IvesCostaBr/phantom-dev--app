@@ -1,7 +1,6 @@
+import 'package:code_edit/shared/buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:code_edit/api.dart';
-import 'package:flutter/services.dart';
-import 'package:path/path.dart' as path;
 
 class EditFilePage extends StatefulWidget {
   String name;
@@ -13,8 +12,9 @@ class EditFilePage extends StatefulWidget {
 }
 
 class _EditFilePageState extends State<EditFilePage> {
-  TextEditingController _problemTextController = TextEditingController();
-  List<String> _dropdownItems = ["refact", "fix"];
+  final TextEditingController _problemTextController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final _dropdownItems = ["refact", "fix"];
   var selectItem = "refact";
   var text = "";
   var _loading = false;
@@ -24,7 +24,8 @@ class _EditFilePageState extends State<EditFilePage> {
     setState(() {
       _loading = true;
     });
-    await autoChange(widget.fileDir, selectItem, _problemTextController.text);
+    await autoChange(
+        widget.fileDir, selectItem, _problemTextController.text, widget.name);
     setState(() {
       _loading = false;
     });
@@ -116,8 +117,12 @@ class _EditFilePageState extends State<EditFilePage> {
           backgroundColor: Colors.amberAccent,
           centerTitle: true,
         ),
+        floatingActionButton: ScrollButton(
+          isUpper: true,
+          scrollController: _scrollController,
+        ),
         body: FutureBuilder<List<dynamic>>(
-          future: getFileDetail(widget.fileDir),
+          future: getFileDetail(widget.fileDir, widget.name),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -135,6 +140,7 @@ class _EditFilePageState extends State<EditFilePage> {
                   .toList()
                   .join('\n');
               return SingleChildScrollView(
+                controller: _scrollController,
                 child: Center(
                   child: Container(
                       child: Column(
@@ -217,6 +223,9 @@ class _EditFilePageState extends State<EditFilePage> {
                                       ],
                                     ),
                                   )),
+                              const SizedBox(
+                                height: 15,
+                              ),
                               ElevatedButton(
                                   onPressed: () async {
                                     _showAlertDialog();
@@ -225,7 +234,7 @@ class _EditFilePageState extends State<EditFilePage> {
                                       backgroundColor:
                                           MaterialStateColor.resolveWith(
                                               (states) => Colors.blueAccent)),
-                                  child: Container(
+                                  child: SizedBox(
                                     width:
                                         MediaQuery.of(context).size.width * 0.4,
                                     child: const Row(
@@ -237,7 +246,7 @@ class _EditFilePageState extends State<EditFilePage> {
                                                 .white), // Ícone antes do texto
                                         SizedBox(
                                             width:
-                                                8), // Espaço entre o ícone e o texto
+                                                20), // Espaço entre o ícone e o texto
                                         Text(
                                           "Auto Analise - GPT",
                                           style: TextStyle(color: Colors.white),

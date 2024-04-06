@@ -202,7 +202,8 @@ class _HomePageState extends State<HomePage> {
                       child: ListTile(
                         onTap: () =>
                             getDetailReposotiory(snapshot.data![index].name),
-                        title: Text(snapshot.data![index].name),
+                        title: Text(
+                            '${snapshot.data![index].name} - [${snapshot.data![index].branch}]'),
                         trailing: Icon(Icons.arrow_forward),
                       ),
                     ),

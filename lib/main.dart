@@ -1,3 +1,4 @@
+import 'package:code_edit/ui/pages/config.dart';
 import 'package:code_edit/ui/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,11 @@ class PhantomApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amberAccent),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      routes: {
+        '/form': (context) => ConfigPage(),
+        '/home': (context) => HomePage(),
+      },
+      home: ConfigPage(),
     );
   }
 }
