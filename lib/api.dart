@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 
 final dio = Dio();
-var baseUrl = "https://48e2-186-210-89-87.ngrok-free.app";
+var baseUrl = "https://44f9-186-210-30-4.ngrok-free.app";
 
 Future<List<Repository>> getRepos() async {
   try {
@@ -18,8 +18,7 @@ Future<List<Repository>> getRepos() async {
     } else {
       throw Exception("error in get repos.");
     }
-  } on Exception catch (e) {
-    developer.log(e as String);
+  } catch (e) {
     return [];
   }
 }
@@ -66,10 +65,9 @@ Future<bool> updateFile(
     if (response.statusCode == 200) {
       return response.data["detail"];
     } else {
-      throw Exception("error in get repos.");
+      throw Exception("error in change or create file");
     }
   } on Exception catch (e) {
-    developer.log(e as String);
     return false;
   }
 }
@@ -164,5 +162,19 @@ Future<String> getPublicKey() async {
   } on Exception catch (e) {
     developer.log(e as String);
     return '';
+  }
+}
+
+Future<bool> updateRepo(String repoName) async {
+  try {
+    final response = await dio.patch("$baseUrl/repositorys/pull",
+        queryParameters: {"repo_name": repoName});
+    if (response.statusCode == 200) {
+      return response.data["detail"];
+    } else {
+      return false;
+    }
+  } on Exception catch (e) {
+    return false;
   }
 }

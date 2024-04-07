@@ -1,4 +1,5 @@
 import 'package:code_edit/ui/pages/edit.dart';
+import 'package:code_edit/ui/pages/new_file.dart';
 import 'package:flutter/material.dart';
 import 'package:code_edit/api.dart';
 
@@ -27,6 +28,14 @@ class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
         backgroundColor: Colors.amberAccent,
         centerTitle: true,
       ),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () => {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => NewFile(name: widget.name)))
+              }),
       body: FutureBuilder<Map<String, dynamic>>(
         future: getRepoTree(widget.name),
         builder: (context, snapshot) {
@@ -112,6 +121,31 @@ class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
                       );
                     },
                   )
+                ],
+              ),
+            ),
+            Container(
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.update),
+                    onPressed: () async {
+                      final result = await updateRepo(widget.name);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: result ? Colors.green : Colors.red,
+                          content: Text(result
+                              ? 'Atualizado com sucesso'
+                              : 'Erro ao Atualizar o Repositório'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      if (result) setState(() {});
+                    },
+                  ),
                 ],
               ),
             ),

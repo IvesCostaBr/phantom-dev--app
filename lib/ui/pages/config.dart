@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:code_edit/db/database.dart';
+import 'package:code_edit/dtos/url.dart';
 import 'package:flutter/material.dart';
 import '../../api.dart';
 
 class ConfigPage extends StatelessWidget {
   final TextEditingController urlApiController = TextEditingController();
   final TextEditingController apiKeyController = TextEditingController();
+  // final _database = PhantomDatabase.instance;
   ConfigPage({Key? key}) : super(key: key);
 
   @override
@@ -20,7 +23,7 @@ class ConfigPage extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(15),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const Text(
                 "Digite as configrações da API",
@@ -49,11 +52,14 @@ class ConfigPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateColor.resolveWith(
+                        (states) => Colors.green)),
                 onPressed: () {
                   // Simular envio do formulário
-
                   if (urlApiController.text.isNotEmpty) {
                     baseUrl = urlApiController.text;
+                    // final result = _database.create(UrlModel(url: baseUrl, apiKey: apiKeyController.text));
                     Navigator.pushReplacementNamed(context, '/home');
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -63,7 +69,10 @@ class ConfigPage extends StatelessWidget {
                     ));
                   }
                 },
-                child: const Text('Enviar'),
+                child: const Text(
+                  'Salvar',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

@@ -1,6 +1,8 @@
 import 'package:code_edit/api.dart';
+import 'package:code_edit/db/database.dart';
 import 'package:code_edit/dtos/repository.dart';
 import 'package:code_edit/ui/pages/detail.dart';
+import 'package:code_edit/ui/pages/edit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -26,13 +28,21 @@ class _HomePageState extends State<HomePage> {
   final _repoLinkController = TextEditingController();
   final _repoNamekController = TextEditingController();
   final _repoBranchController = TextEditingController();
+  // final _database = PhantomDatabase.instance;
   var _publicKey = '';
 
   @override
   void initState() {
     super.initState();
     initializePublicKey();
+    // getUrl(1);
   }
+
+  // getUrl(int id) {
+  //   _database.read(id).then((value) {
+  //     print(value);
+  //   });
+  // }
 
   getDetailReposotiory(String repositoryName) {
     Navigator.push(
@@ -147,11 +157,11 @@ class _HomePageState extends State<HomePage> {
                     : "Erro ao adicionar o repositório";
                 showSnackBar(message, result);
                 Navigator.of(context).pop();
-                initState() {
+                setState(() {
                   _repoNamekController.text = "";
                   _repoBranchController.text = "";
                   _repoLinkController.text = "";
-                }
+                });
               },
               child: const Text(
                 'Adicionar',
@@ -218,7 +228,9 @@ class _HomePageState extends State<HomePage> {
             );
           } else {
             return const Center(
-              child: Text("Não foi encontrado nenhum repositório registrado."),
+              child: Text(
+                  "Não foi encontrado nenhum repositório registrado \n ou o link da api não foi configurado.",
+                  overflow: TextOverflow.clip),
             );
           }
         },

@@ -2,17 +2,21 @@
 
 ## Sobre
 
-Trata-se um projeto voltado a correção e validação de código server side.
+Trata-se um projeto voltado a correção e validação de código server side. no caso a parte visual da integração com a api.
 
 ## Tecnologias Utilizadas
 
-- MongoDB
-- Python
-- FastApi
+- Flutter
+- SqLite
+- Material
 
-## Execução
+## Execução Local
 
 - Na raiz do projeto `flutter run -d chrome` para executar em seu navegador chrome.
+
+## Deploy
+
+- para deployar essa aplicação flutter siga esse tutorial: [clique aqui](https://medium.com/flutter/must-try-use-firebase-to-host-your-flutter-app-on-the-web-852ee533a469)
 
 ## Licença
 
