@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                 height: 10,
               ),
               const Text(
-                  "Adicione essa chave publica no seu provedor de repositorio [GitHub, Gitlab]",
+                  "Adicione essa chave publica no seu provedor de repositorio [GitHub, Gitlab], caso o repositório esteja privado.",
                   overflow: TextOverflow.clip,
                   maxLines: null),
               const SizedBox(
@@ -146,13 +146,12 @@ class _HomePageState extends State<HomePage> {
                     ? "Repositório Adicionado"
                     : "Erro ao adicionar o repositório";
                 showSnackBar(message, result);
+                Navigator.of(context).pop();
                 initState() {
                   _repoNamekController.text = "";
                   _repoBranchController.text = "";
                   _repoLinkController.text = "";
                 }
-
-                Navigator.of(context).pop();
               },
               child: const Text(
                 'Adicionar',
@@ -172,6 +171,12 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Repositórios"),
         backgroundColor: Colors.amberAccent,
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/form');
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
       body: FutureBuilder<List<Repository>?>(
         future: getRepos(),

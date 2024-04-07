@@ -11,6 +11,7 @@ class DetailRepositoryPage extends StatefulWidget {
 }
 
 class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
+  String _filter = '';
   editFile(String fileDir) {
     Navigator.push(
         context,
@@ -40,6 +41,10 @@ class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
               child: Text("Erro: ${snapshot.error}"),
             );
           } else {
+            var filteredItems = _filter.isEmpty
+                ? snapshot.data!["tree_dir"]
+                : snapshot.data!["tree_dir"]
+                    .where((item) => item.toString().contains(_filter));
             return Container(
               color: Colors.white,
               child: ListView.builder(
@@ -47,7 +52,21 @@ class _DetailRepositoryPageState extends State<DetailRepositoryPage> {
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      for (var item in snapshot.data!["tree_dir"])
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            labelText: 'Pesquise o arquivo',
+                            border: OutlineInputBorder(),
+                          ),
+                          onSubmitted: (value) {
+                            setState(() {
+                              _filter = value;
+                            });
+                          },
+                        ),
+                      ),
+                      for (var item in filteredItems)
                         ListTile(
                           trailing: const Icon(Icons.arrow_circle_right),
                           focusColor: Colors.amber,

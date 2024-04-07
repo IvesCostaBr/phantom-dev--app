@@ -20,7 +20,7 @@ class PhantomApp extends StatelessWidget {
       ),
       routes: {
         '/form': (context) => ConfigPage(),
-        '/home': (context) => HomePage(),
+        '/home': (context) => const HomePage(),
       },
       home: ConfigPage(),
     );

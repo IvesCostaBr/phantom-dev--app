@@ -1,7 +1,25 @@
-# Phantom-dev
+# Phantom Dev Tool - Mobile
 
-Caso de uso real integrando com a api Phantom-dev-tool
+## Sobre
 
-## Getting Started
+Trata-se um projeto voltado a correção e validação de código server side.
 
-na raiz do projeto `flutter run -d chrome` para executar em seu navegador chrome.
+## Tecnologias Utilizadas
+
+- MongoDB
+- Python
+- FastApi
+
+## Execução
+
+- Na raiz do projeto `flutter run -d chrome` para executar em seu navegador chrome.
+
+## Licença
+
+Copyright (c) [year], [Ives Costa]
+Este projeto está licenciado sob a [Licença BSD](https://pt.wikipedia.org/wiki/Licen%C3%A7a_BSD).
+
+## Contato
+
+Email: <ivespauiniam@gmail.com>
+Linkedin: <https://www.linkedin.com/in/ives-costa-082274183/>

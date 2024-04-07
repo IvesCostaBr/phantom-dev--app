@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 
 final dio = Dio();
-var baseUrl = "";
+var baseUrl = "https://48e2-186-210-89-87.ngrok-free.app";
 
 Future<List<Repository>> getRepos() async {
   try {
